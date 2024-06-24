@@ -4,6 +4,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SearchIcon from '@mui/icons-material/Search';
 import styled from "styled-components"
+import { signOut } from "firebase/auth";
+import { auth } from "@/config/firebase";
 
 const StyledContainer = styled.div`
     height: 100vh;
@@ -47,6 +49,16 @@ const StyledUserAvatar = styled(Avatar)`
 `
 
 const SideBar = () => {
+
+    const logout = async () => {
+        try {
+            await signOut(auth);
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
     return <StyledContainer>
         <StyledHeader>
             <Tooltip title="Profile" placement="right">
@@ -62,7 +74,7 @@ const SideBar = () => {
                     <MoreVertIcon />
                 </IconButton>
 
-                <IconButton>
+                <IconButton onClick={logout}>
                     <LogoutIcon />
                 </IconButton>
             </div>
