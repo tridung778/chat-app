@@ -24,6 +24,7 @@ import * as EmailValidator from "email-validator";
 import { addDoc, collection, query, where } from "firebase/firestore";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { Conversation } from "@/types";
+import ConversationSeleced from "./ConversationSeleced";
 
 const StyledContainer = styled.div`
   height: 100vh;
@@ -31,6 +32,13 @@ const StyledContainer = styled.div`
   max-width: 350px;
   overflow-y: scroll;
   border-right: 1px solid whitesmoke;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 `;
 
 const StyledHeader = styled.div`
@@ -90,10 +98,9 @@ const SideBar = () => {
   const [conversationsSnapshot] = useCollection(queryGetConversationsForUser);
 
   const isConversationAlreadyExists = (recipientEmail: string) => {
-    return conversationsSnapshot?.docs.find(
-      (conversation) =>
-        (conversation.data() as Conversation).users.includes(recipientEmail)
-    )
+    return conversationsSnapshot?.docs.find((conversation) =>
+      (conversation.data() as Conversation).users.includes(recipientEmail)
+    );
   };
 
   const isInvitSelf = recipientEmail === loggedUser?.email;
@@ -101,7 +108,11 @@ const SideBar = () => {
   const createConversation = async () => {
     if (!recipientEmail) return;
 
-    if (EmailValidator.validate(recipientEmail) && !isInvitSelf) {
+    if (
+      EmailValidator.validate(recipientEmail) &&
+      !isInvitSelf &&
+      !isConversationAlreadyExists(recipientEmail)
+    ) {
       await addDoc(collection(db, "conversations"), {
         users: [loggedUser?.email, recipientEmail],
       });
@@ -148,6 +159,15 @@ const SideBar = () => {
       <StyledSideBarButton onClick={() => toggleNewConversationDialog(true)}>
         Start a new conversation
       </StyledSideBarButton>
+
+      {conversationsSnapshot?.docs.map((conversation) => (
+        <ConversationSeleced
+          key={conversation.id}
+          id={conversation.id}
+          conversationUsers={(conversation.data() as Conversation).users}
+        />
+      ))}
+
       <Dialog
         open={isOpenConversationDialog}
         onClose={() => toggleNewConversationDialog(false)}
