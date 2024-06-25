@@ -15,5 +15,5 @@ export interface IMessage{
     conversation_id: string;
     sent_at: string;
     text: string;
-    user_id: string;
+    user: string;
 }
