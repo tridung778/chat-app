@@ -19,7 +19,7 @@ import { useRouter } from "next/router";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/config/firebase";
-import Message from "./message";
+import Message from "./Message";
 import {
   KeyboardEventHandler,
   MouseEventHandler,
